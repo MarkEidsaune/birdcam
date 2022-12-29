@@ -1,0 +1,4 @@
+.ipynb_checkpoints/
+birdcam/checkpoints/*
+birdcam/test_inferences/*
+birdcam/__pycache__
