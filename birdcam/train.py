@@ -15,9 +15,9 @@ import numpy as np
 import torch
 import torchvision
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
-from engine import train_one_epoch, evaluate
-import utils
-import transforms as T
+from birdcam.engine import train_one_epoch, evaluate
+import birdcam.utils as utils
+import birdcam.transforms as T
 import torch.distributed as dist
 from na_birds_dataset import NABirdsDataset
 

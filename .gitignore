@@ -3,3 +3,4 @@ __pycache__/
 
 birdcam/checkpoints/*
 birdcam/test_inferences/*
+birdcam/creds.json
