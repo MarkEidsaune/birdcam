@@ -11,7 +11,7 @@ import torch
 import torchvision
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 import birdcam.transforms as T
-from na_birds_dataset import NABirdsDataset
+from birdcam.na_birds_dataset import NABirdsDataset
 from matplotlib import pyplot as plt
 from matplotlib.patches import Rectangle
 
