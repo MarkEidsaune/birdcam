@@ -19,8 +19,7 @@ from birdcam.engine import train_one_epoch, evaluate
 import birdcam.utils as utils
 import birdcam.transforms as T
 import torch.distributed as dist
-from na_birds_dataset import NABirdsDataset
-
+from datasets import NABirdsDataset, BirdcamDataset, BingBirdsDataset
 from group_by_aspect_ratio import GroupedBatchSampler, create_aspect_ratio_groups
 # from torchvision.transforms import InterpolationMode
 # from transforms import SimpleCopyPaste
@@ -32,10 +31,20 @@ def get_transforms(train):
         transforms.append(T.RandomHorizontalFlip(0.5))
     return T.Compose(transforms)
 
-def get_dataset(path, split):
-    ds = NABirdsDataset(root=path, transforms=get_transforms(train=True))
-    ds_test = NABirdsDataset(root=path, transforms=get_transforms(train=False))
-    
+def get_dataset(path, dataset, split):
+    if dataset == 'NABirds':
+        ds = NABirdsDataset(root=path, transforms=get_transforms(train=True))
+        ds_test = NABirdsDataset(root=path, transforms=get_transforms(train=False))
+    elif dataset == 'Bircam':
+        ds = BirdcamDataset(root=path, transforms=get_transforms(train=True))
+        ds_test = BirdcamDataset(root=path, transforms=get_transforms(train=False))
+    elif dataset == 'BingBirds':
+        print('Bing dataset not currently supported')
+        return None
+    else:
+        print(f'{dataset} is not a valid dataset.  Dataset options are NABirds, Birdcam, or BingBirds')
+        return None
+
     num_classes = ds.num_classes
     
     split_idx = int(np.floor(split * len(ds)))
@@ -53,7 +62,7 @@ def main(args):
     device = torch.device(args.device)
         
     print('Loading data')
-    ds, ds_test, num_classes = get_dataset(args.data_path, args.split)
+    ds, ds_test, num_classes = get_dataset(args.data_path, args.dataset, args.split)
     
     print('Creating data loaders')
     if args.distributed:
@@ -144,6 +153,7 @@ if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--data-path', default='/media/nvme2/nabirds', type=str, help='dataset path')
+    parser.add_argument('--dataset', default='NABirds', type=str, help='dataset (NABirds, Birdcam, or BingBirds)')
     parser.add_argument('--split', default=0.8, type=float, help='training data split proportion')
     parser.add_argument('--model', default='fasterrcnn_resnet50_fpn', type=str, help='model name')
     parser.add_argument('--device', default='cuda', type=str, help='device (use cuda or cpu)')
